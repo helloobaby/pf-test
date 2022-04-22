@@ -1,0 +1,87 @@
+;
+; pf_test.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=pf_test.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockDown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+pf_test_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+pf_test.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%pf_test.DeviceDesc%=pf_test_Device, Root\pf_test ; TODO: edit hw-id
+
+[pf_test_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+pf_test.sys
+
+;-------------- Service installation
+[pf_test_Device.NT.Services]
+AddService = pf_test,%SPSVCINST_ASSOCSERVICE%, pf_test_Service_Inst
+
+; -------------- pf_test driver install sections
+[pf_test_Service_Inst]
+DisplayName    = %pf_test.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\pf_test.sys
+
+;
+;--- pf_test_Device Coinstaller installation ------
+;
+
+[pf_test_Device.NT.CoInstallers]
+AddReg=pf_test_Device_CoInstaller_AddReg
+CopyFiles=pf_test_Device_CoInstaller_CopyFiles
+
+[pf_test_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[pf_test_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[pf_test_Device.NT.Wdf]
+KmdfService =  pf_test, pf_test_wdfsect
+[pf_test_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "pf_test Installation Disk"
+pf_test.DeviceDesc = "pf_test Device"
+pf_test.SVCDESC = "pf_test Service"
