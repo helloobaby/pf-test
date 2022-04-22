@@ -1,3 +1,0 @@
-[submodule "kernel-hook"]
-	path = kernel-hook
-	url = https://github.com/helloobaby/kernel-hook.git
