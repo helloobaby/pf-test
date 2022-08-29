@@ -48,7 +48,16 @@ hk_pf proc
 	jmp [ori_pf]
 hk_pf endp
 
+get_current_prcb proc
+	;lea rax,gs:[0]
+	mov rax,gs:[18h]
+	ret
+get_current_prcb endp
 
+asm_swapgs proc
+	swapgs
+	ret
+asm_swapgs endp
 
 
 end
